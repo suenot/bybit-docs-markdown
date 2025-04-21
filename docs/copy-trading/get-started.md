@@ -43,14 +43,16 @@ Learn how to start copy trading on Bybit, either as a Master Trader or a Followe
 
 ## Risk Management
 
-### Position Settings
-1. Copy ratio customization
-2. Take Profit/Stop Loss levels
-3. Maximum position size
-4. Drawdown limits
+Copy Trading offers various risk management tools. Some are configured via the Bybit platform, while others can be managed via API.
 
-### Monitoring Tools
-1. Real-time performance tracking
-2. Position status updates
-3. P&L monitoring
-4. Risk exposure analysis
+### Position Settings (Platform & API)
+1. **Copy Ratio Customization:** (Typically set via platform interface)
+2. **Take Profit/Stop Loss Levels:** Can be set per-order via the `takeProfit` and `stopLoss` parameters in the [Place Order](./api-endpoints.md#place-copy-trade) API call.
+3. **Maximum Position Size:** (Typically set via platform interface)
+4. **Drawdown Limits:** (Typically set via platform interface)
+
+### Monitoring Tools (via API & WebSocket)
+1. **Real-time Performance Tracking:** Monitor P&L via position updates.
+2. **Position Status Updates:** Use the [Position List endpoint](./../derivatives/account/position-info.md) and the [Private Position WebSocket Stream](./websocket.md#position-updates).
+3. **P&L Monitoring:** Use the [Closed PnL endpoint](https://bybit-exchange.github.io/docs/v5/position/close-pnl) and monitor position stream PnL fields.
+4. **Risk Exposure Analysis:** Analyze position values and margin requirements from account/position endpoints and streams.

@@ -221,6 +221,49 @@ GET /v5/market/recent-trade
 }
 ```
 
+## Get Kline (Candlestick Data)
+Get kline/candlestick data for options.
+
+### Endpoint
+```http
+GET /v5/market/kline
+```
+
+### Parameters
+| Parameter | Required | Type | Description |
+|-----------|----------|------|-------------|
+| category | Yes | string | Must be "option" |
+| symbol | Yes | string | Symbol name, e.g., `BTC-30DEC22-18000-C` |
+| interval | Yes | string | Kline interval. `1`,`3`,`5`,`15`,`30`,`60`,`120`,`240`,`360`,`720`,`D`,`M`,`W` |
+| start | No | integer | Start timestamp (ms) |
+| end | No | integer | End timestamp (ms) |
+| limit | No | integer | Limit for data size. [`1`, `1000`]. Default: `200` |
+
+### Response
+```json
+{
+    "retCode": 0,
+    "retMsg": "OK",
+    "result": {
+        "symbol": "BTC-30DEC22-18000-C",
+        "category": "option",
+        "list": [
+            [
+                "1672502400000", // Start time
+                "150.0",    // Open price
+                "155.5",    // High price
+                "148.0",    // Low price
+                "152.5",    // Close price
+                "100.0",    // Volume
+                "15250.0"  // Turnover
+            ]
+        ]
+    },
+    "retExtInfo": {},
+    "time": 1672764159969
+}
+```
+
 ## Error Codes
 For error codes and messages, please refer to the [Error Codes](../error-codes.md) documentation.
 

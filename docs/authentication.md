@@ -20,6 +20,17 @@
 - Enable IP restrictions when possible
 :::
 
+## Regional Endpoint Requirements
+
+Bybit enforces region-specific API endpoints for certain countries. If you are accessing the API from the following regions, use the designated endpoint:
+
+- **Netherlands:** `https://api.bybit.nl`
+- **Hong Kong:** `https://api.byhkbit.com`
+- **Turkey:** `https://api.bybit-tr.com`
+- **Kazakhstan:** `https://api.bybit.kz`
+
+> **Note:** Bybit cannot guarantee the stability or performance of `api.bybit.com` for users in these regions, and this domain may be shut down at any time for these users. Always use the correct endpoint for your region.
+
 ## REST API Authentication
 
 Every private REST request must be signed and include the following HTTP headers:
@@ -27,7 +38,7 @@ Every private REST request must be signed and include the following HTTP headers
 ```
 X-BAPI-API-KEY: your api key
 X-BAPI-SIGN: signature
-X-BAPI-SIGN-TYPE: 2
+X-BAPI-SIGN-TYPE: 2  # Always use 2 for Bybit V5 API
 X-BAPI-TIMESTAMP: timestamp
 X-BAPI-RECV-WINDOW: recv window
 ```
@@ -216,6 +227,10 @@ ws = websocket.WebSocketApp(
 ws.run_forever()
 ```
 
+## SDK Authentication Automation
+
+If you use an official Bybit SDK (such as [pybit](./sdk/python.md), [bybit-api](./sdk/nodejs.md), [bybit.go.api](./sdk/go.md), [bybit-java-api](./sdk/java.md), or [bybit.net.api](./sdk/csharp.md)), authentication is handled automatically for you. Refer to the SDK documentation for details and best practices.
+
 ## Error Handling
 
 Common authentication errors:
@@ -227,6 +242,8 @@ Common authentication errors:
 | 10003 | Invalid timestamp | Ensure server time is synchronized |
 | 10004 | Invalid recv_window | Use smaller recv_window value |
 | 10005 | Permission denied | Check API key permissions |
+
+For a full list of error codes and troubleshooting tips, see the [Error Codes documentation](./error-codes.md).
 
 ## Best Practices
 

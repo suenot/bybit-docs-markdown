@@ -17,13 +17,83 @@ X-RateLimit-Reset: Time until the rate limit resets (UTC timestamp in seconds)
 
 ## REST API Rate Limits
 
-### General Rules
-- Rate limits are calculated using a sliding window
-- Different endpoints have different rate limits
-- Exceeding rate limits results in HTTP 429 error
-- Server timestamp is used for rate limit calculations
+Bybit V5 API employs different rate limits based on endpoint type and your VIP level or if you are a Pro user.
 
-### Rate Limit Categories
+- **Standard Account Users (Non-VIP, VIP-1, VIP-2, VIP-3):** Limits are the same.
+- **VIP-4, VIP-5, Supreme VIP, Pro-1, Pro-2, Pro-3:** Limits are the same.
+- **Pro-4, Pro-5:** Limits are the same.
+
+Limits are typically measured per UID per second (req/s).
+
+### Endpoint Limit Tiers (Requests per Second per UID)
+
+| Endpoint Path Pattern | Standard User | VIP-4/5, Supreme, Pro-1/2/3 | Pro-4/5 |
+|-----------------------|---------------|-----------------------------|---------|
+| `/v5/order/create` | 10 req/s | 10 req/s | 10 req/s |
+| `/v5/order/amend` | 10 req/s | 10 req/s | 10 req/s |
+| `/v5/order/cancel` | 10 req/s | 10 req/s | 10 req/s |
+| `/v5/order/create-batch` | 10 req/s | 10 req/s | 10 req/s |
+| `/v5/order/amend-batch` | 10 req/s | 10 req/s | 10 req/s |
+| `/v5/order/cancel-batch` | 10 req/s | 10 req/s | 10 req/s |
+| `/v5/order/cancel-all` | 1 req/s | 1 req/s | 1 req/s |
+| `/v5/position/set-leverage` | 10 req/s | 10 req/s | 10 req/s |
+| `/v5/position/...` (excluding set-leverage) | 10 req/s | 20 req/s | 20 req/s |
+| `/v5/execution/list` | 10 req/s | 20 req/s | 20 req/s |
+| `/v5/order/realtime` | 10 req/s | 20 req/s | 20 req/s |
+| `/v5/order/history` | 10 req/s | 20 req/s | 20 req/s |
+| `/v5/account/...` | 10 req/s | 20 req/s | 20 req/s |
+| `/v5/asset/...` | 10 req/s | 20 req/s | 20 req/s |
+| `/v5/user/query-api` | 10 req/s | 10 req/s | 10 req/s |
+| `/v5/user/...` (excluding query-api) | 10 req/s | 20 req/s | 20 req/s |
+| `/v5/spot-leverage-token/...` | 10 req/s | 20 req/s | 20 req/s |
+| `/v5/spot-margin-trade/...` | 10 req/s | 20 req/s | 20 req/s |
+| `/v5/ins-loan/...` | 10 req/s | 20 req/s | 20 req/s |
+
+### Public Endpoints (Market Data)
+
+Limits are typically measured per IP per second (req/s).
+
+| Endpoint Path Pattern | Limit |
+|-----------------------|-------|
+| `/v5/market/kline` | 10 req/s |
+| `/v5/market/mark-price-kline` | 10 req/s |
+| `/v5/market/index-price-kline` | 10 req/s |
+| `/v5/market/premium-index-price-kline` | 10 req/s |
+| `/v5/market/instruments-info` | 10 req/s |
+| `/v5/market/orderbook` | 10 req/s |
+| `/v5/market/tickers` | 10 req/s |
+| `/v5/market/funding/history` | 10 req/s |
+| `/v5/market/recent-trade` | 10 req/s |
+| `/v5/market/open-interest` | 10 req/s |
+| `/v5/market/historical-volatility` | 10 req/s |
+| `/v5/market/insurance` | 10 req/s |
+| `/v5/market/risk-limit-info` | 10 req/s |
+| `/v5/market/delivery-price` | 10 req/s |
+| `/v5/market/account-ratio` | 10 req/s |
+| `/v5/market/time` | 10 req/s |
+| `/v5/market/announcements` | 10 req/s |
+
+### Request Limit Summary (per UID)
+
+| VIP Level | Private Endpoint Limit (req/s) | Public Endpoint Limit (req/s) |
+|-----------|--------------------------------|-------------------------------|
+| Non-VIP | 10 | 10 |
+| VIP-1 | 10 | 10 |
+| VIP-2 | 10 | 10 |
+| VIP-3 | 10 | 10 |
+| VIP-4 | 20 | 10 |
+| VIP-5 | 20 | 10 |
+| Supreme VIP | 20 | 10 |
+| Pro-1 | 20 | 10 |
+| Pro-2 | 20 | 10 |
+| Pro-3 | 20 | 10 |
+| Pro-4 | 20 | 10 |
+| Pro-5 | 20 | 10 |
+
+_Note: Order placement/amendment/cancellation endpoints have a fixed limit of 10 req/s regardless of VIP level._
+
+### Old Rate Limit Categories (Deprecated - For Context Only)
+_(This section describes the previous structure, which might still be reflected in older code or discussions, but the tables above represent the current V5 limits)._
 
 #### Market Data Endpoints
 | Endpoint Type | Rate Limit (requests/min) |
@@ -56,29 +126,26 @@ X-RateLimit-Reset: Time until the rate limit resets (UTC timestamp in seconds)
 ### IP Rate Limits
 | Connection Type | Limit |
 |----------------|-------|
-| Single IP | 1000 requests per minute |
+| Single IP | 600 requests per 5 seconds (equivalent to 7200 req/min average) |
 | WebSocket connections per IP | 50 |
 
 ## WebSocket Rate Limits
 
 ### Connection Limits
-- Maximum 50 WebSocket connections per IP address
-- Maximum 10 authentication requests per minute per connection
-- Maximum 240 subscriptions per connection
+- Maximum 10 WebSocket connections per UID (including main and sub-accounts).
+- Maximum 10 authentication requests per minute per connection.
+- Maximum 1000 subscriptions per connection.
 
 ### Subscription Limits
-| Topic Type | Maximum Subscriptions |
-|------------|---------------------|
-| Order Book | 40 per connection |
-| Trade | 40 per connection |
-| Ticker | 40 per connection |
-| Kline | 40 per connection |
-| Private Topics | No limit |
+- No specific per-topic limits, but total subscriptions per connection cannot exceed 1000.
+
+### Request Limits (e.g., for Order Entry via WebSocket)
+- **Order Placement/Amendment/Cancellation:** 10 requests per second per UID.
 
 ### Heartbeat
-- Server sends ping every 20 seconds
-- Client must respond with pong within 20 seconds
-- Connection will be closed if no response
+- Server sends ping every 20 seconds.
+- Client must respond with pong within 20 seconds.
+- Connection will be closed if no response.
 
 ## Best Practices
 

@@ -1,114 +1,104 @@
 # Copy Trading WebSocket Streams
 
-WebSocket streams for real-time copy trading data.
+WebSocket streams provide real-time data relevant to Copy Trading activities. To receive updates, subscribe to the standard private WebSocket streams.
+
+## Connection
+Connect to the **Private Stream** endpoint:
+- Mainnet: `wss://stream.bybit.com/v5/private`
+- Testnet: `wss://stream-testnet.bybit.com/v5/private`
+
+Remember to authenticate the connection as described in the main [WebSocket Connection](./../websocket/connect.md) guide.
 
 ## Position Updates
 
-Subscribe to position updates for copy trading positions.
+Subscribe to the standard `position` topic to receive real-time updates on your derivatives positions, including those opened or managed through Copy Trading (Master Trader or Follower). Since Copy Trading currently only supports USDT Perpetuals, subscribing to the specific category topic is recommended.
 
-### Request Parameters
-| Parameter | Type | Required | Comments |
-|:---------|:-----|:---------|:---------|
-|op |string |**true** |Operation. `subscribe` |
-|args |array |**true** |Channel names |
+**Topic:**
+```
+position.linear
+```
 
-### Response Parameters
-| Parameter | Type | Comments |
-|:---------|:-----|:---------|
-|topic |string |Topic name |
-|data |array |Position data |
-|> symbol |string |Symbol name |
-|> side |string |Position side |
-|> size |string |Position size |
-|> entryPrice |string |Average entry price |
-|> leverage |string |Position leverage |
-|> markPrice |string |Mark price |
-|> positionValue |string |Position value |
-|> unrealisedPnl |string |Unrealized PnL |
-
-### Subscribe Example
+**Subscription Example:**
 ```json
 {
     "op": "subscribe",
     "args": [
-        "copyTrade.position"
+        "position.linear"
     ]
 }
 ```
 
-### Stream Example
+**Stream Format:**
+The message format is the same as the standard [Private Position Stream](./../websocket/private/position.md). Copy Trading positions will appear with `category` set to `linear`.
+
+**Example Snippet (Conceptual):**
 ```json
 {
-    "topic": "copyTrade.position",
+    "topic": "position.linear",
+    "type": "snapshot", // or "delta"
+    "ts": 1672304486868,
     "data": [
         {
             "symbol": "BTCUSDT",
+            "category": "linear",
             "side": "Buy",
             "size": "0.1",
             "entryPrice": "29000",
             "leverage": "10",
             "markPrice": "29100",
             "positionValue": "2910",
-            "unrealisedPnl": "10"
+            "unrealisedPnl": "10",
+            // ... other standard position fields
         }
     ]
 }
 ```
 
+Refer to the [Private Position Stream Documentation](./../websocket/private/position.md) for the full message format and details.
+
 ## Order Updates
 
-Subscribe to order updates for copy trading orders.
+Subscribe to the standard `order` topic to receive real-time updates on your orders, including those related to Copy Trading activities. Subscribing to the specific category topic is recommended.
 
-### Request Parameters
-| Parameter | Type | Required | Comments |
-|:---------|:-----|:---------|:---------|
-|op |string |**true** |Operation. `subscribe` |
-|args |array |**true** |Channel names |
+**Topic:**
+```
+order.linear
+```
 
-### Response Parameters
-| Parameter | Type | Comments |
-|:---------|:-----|:---------|
-|topic |string |Topic name |
-|data |array |Order data |
-|> symbol |string |Symbol name |
-|> orderId |string |Order ID |
-|> side |string |Order side |
-|> orderType |string |Order type |
-|> price |string |Order price |
-|> qty |string |Order quantity |
-|> orderStatus |string |Order status |
-|> execQty |string |Executed quantity |
-|> execPrice |string |Execution price |
-|> execFee |string |Execution fee |
-|> createTime |string |Order creation time |
-
-### Subscribe Example
+**Subscription Example:**
 ```json
 {
     "op": "subscribe",
     "args": [
-        "copyTrade.order"
+        "order.linear"
     ]
 }
 ```
 
-### Stream Example
+**Stream Format:**
+The message format is the same as the standard [Private Order Stream](./../websocket/private/order.md). Copy Trading orders will appear with `category` set to `linear`.
+
+**Example Snippet (Conceptual):**
 ```json
 {
-    "topic": "copyTrade.order",
+    "topic": "order.linear",
+    "type": "snapshot", // or "delta"
+    "ts": 1672304486868,
     "data": [
-        {
+         {
             "symbol": "BTCUSDT",
+            "category": "linear",
             "orderId": "1234567890",
             "side": "Buy",
             "orderType": "Limit",
             "price": "29000",
             "qty": "0.1",
             "orderStatus": "Filled",
-            "execQty": "0.1",
-            "execPrice": "29000",
-            "execFee": "0.1",
+            // ... other standard order fields
             "createTime": "1672132480085"
         }
     ]
 }
+```
+
+Refer to the [Private Order Stream Documentation](./../websocket/private/order.md) for the full message format and details.
